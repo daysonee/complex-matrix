@@ -53,7 +53,8 @@ public final class ComplexMatrix {
         }
         return data[i][j];
     }
-@Override 
+
+    @Override
     public String toString() {
         String matrix = "";
         for (int i = 0; i < rows; ++i) {
@@ -71,4 +72,48 @@ public final class ComplexMatrix {
         }
         return matrix;
     }
+
+    public ComplexMatrix add(ComplexMatrix a) {
+        if (a.cols != this.cols || a.rows != this.rows) {
+            throw new IllegalArgumentException("Неправильная размерность матрицы");
+        }
+        Complex[][] res = new Complex[rows][cols];
+        for (int i = 0; i < rows; ++i) {
+            for (int j = 0; j < cols; ++j) {
+                res[i][j] = data[i][j].add(a.get(i, j));
+            }
+        }
+        return new ComplexMatrix(res);
+    }
+
+    public ComplexMatrix subtract(ComplexMatrix a) {
+        if (a.cols != this.cols || a.rows != this.rows) {
+            throw new IllegalArgumentException("Неправильная размерность матрицы");
+        }
+        Complex[][] res = new Complex[rows][cols];
+        for (int i = 0; i < rows; ++i) {
+            for (int j = 0; j < cols; ++j) {
+                res[i][j] = data[i][j].subtract(a.get(i, j));
+            }
+        }
+        return new ComplexMatrix(res);
+    }
+
+    public ComplexMatrix multiply(ComplexMatrix a) {
+        if (a.rows != this.cols) {
+            throw new IllegalArgumentException("Неправильная размерность матрицы");
+        }
+        Complex[][] res = new Complex[rows][cols];
+        for (int i = 0; i < this.rows; ++i) {
+            for (int j = 0; j < a.cols; ++j) {
+                res[i][j] = Complex.ZERO;
+                for (int k = 0; k < this.cols; k++) {
+                    res[i][j].add(data[i][k].multiply(a.get(k, j)));
+                }
+            }
+        }
+        return new ComplexMatrix(res);
+    }
+
+    
 }
