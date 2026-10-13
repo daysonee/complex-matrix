@@ -1,5 +1,8 @@
 package com.github.daysonee;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 public final class Complex {
 
     public static final double EPS = 1e-9;
@@ -43,35 +46,58 @@ public final class Complex {
         return new Complex(real, image);
     }
 
-    public boolean isZero(){
-        if(Math.abs(this.re)<EPS && Math.abs(this.im)<EPS){
+    public boolean isZero() {
+        if (Math.abs(this.re) < EPS && Math.abs(this.im) < EPS) {
             return true;
         }
         return false;
     }
 
     public Complex divide(Complex x) {
-        double denominator = x.re*x.re + x.im*x.im;
-        if(x.isZero()){
+        double denominator = x.re * x.re + x.im * x.im;
+        if (x.isZero()) {
             throw new ArithmeticException("Деление на нулевое комплексное");
         }
-        double real = (this.re*x.re + this.im*x.im) / denominator;
-        double image = (this.im*x.re - this.re*x.im) / denominator;
+        double real = (this.re * x.re + this.im * x.im) / denominator;
+        double image = (this.im * x.re - this.re * x.im) / denominator;
 
         return new Complex(real, image);
     }
 
-    public Complex conjugate(){
+    public Complex conjugate() {
         return new Complex(re, -im);
     }
 
-    public Complex negate(){
+    public Complex negate() {
         return new Complex(-re, -im);
     }
-    
-    public double abs(){
-        return (Math.sqrt(re*re + im*im));
+
+    public double abs() {
+        return (Math.sqrt(re * re + im * im));
     }
+
+    private static String format(double num) {
+        String s = BigDecimal.valueOf(num).setScale(6, RoundingMode.HALF_UP).stripTrailingZeros().toPlainString();
+        return s;
+
+    }
+
+    @Override
+    public String toString() {
+        String sign = this.im > 0 ? "+" : "-";
+        String realString = format(re);
+        String imageString = format(Math.abs(im));
+        if (imageString.equals("0") == true) {
+            return realString;
+        }
+        imageString = imageString.equals("1") == true ? "i" : imageString + "i";
+        if (realString.equals("0") == true) {
+            return sign.equals("+") == true ? imageString : sign + imageString;
+        }
+        return realString + sign + imageString;
+
+    }
+
 
 
 }

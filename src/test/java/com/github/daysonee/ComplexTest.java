@@ -130,4 +130,24 @@ public class ComplexTest {
 
         assertThrows(ArithmeticException.class, () -> a.divide(Complex.ZERO));
     }
+
+        @Test
+    void checkToString() {
+        assertEquals("3+4i", new Complex(3, 4).toString());
+        assertEquals("3-4i", new Complex(3, -4).toString());
+        assertEquals("-2i", new Complex(0, -2).toString());
+        assertEquals("5", new Complex(5, 0).toString());
+        assertEquals("0", Complex.ZERO.toString());
+        assertEquals("1.5-2.5i", new Complex(1.5, -2.5).toString());
+
+        assertEquals("i", Complex.I.toString());
+        assertEquals("-i", new Complex(0, -1).toString());
+        assertEquals("3+i", new Complex(3, 1).toString());
+        assertEquals("3-i", new Complex(3, -1).toString());
+
+        assertEquals("0.3", new Complex(0.1 + 0.2, 0).toString());
+        assertEquals("5", new Complex(5, -1e-12).toString());
+        assertEquals("0", new Complex(-0.0, 0).toString());
+    }
+
 }
