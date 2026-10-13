@@ -83,5 +83,51 @@ public class ComplexTest {
         assertEquals(0, f.getIm(), EPS);
     }
 
-    
+        @Test
+    void checkConjugate() {
+        Complex a = new Complex(3, 4);
+        Complex b = a.conjugate();
+
+        assertEquals(3, b.getRe(), EPS);
+        assertEquals(-4, b.getIm(), EPS);
+    }
+
+    @Test
+    void checkNegate() {
+        Complex a = new Complex(3, -4);
+        Complex b = a.negate();
+
+        assertEquals(-3, b.getRe(), EPS);
+        assertEquals(4, b.getIm(), EPS);
+    }
+
+    @Test
+    void checkAbs() {
+        Complex a = new Complex(3, 4);
+
+        assertEquals(5, a.abs(), EPS);
+    }
+
+    @Test
+    void checkIsZero() {
+        assertTrue(Complex.ZERO.isZero());
+        assertFalse(Complex.ONE.isZero());
+    }
+
+    @Test
+    void checkDivide() {
+        Complex a = new Complex(-5, 10);
+        Complex b = new Complex(3, 4);
+        Complex c = a.divide(b);
+
+        assertEquals(1, c.getRe(), EPS);
+        assertEquals(2, c.getIm(), EPS);
+    }
+
+    @Test
+    void checkDivideByZero() {
+        Complex a = new Complex(1, 2);
+
+        assertThrows(ArithmeticException.class, () -> a.divide(Complex.ZERO));
+    }
 }

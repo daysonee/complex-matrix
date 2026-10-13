@@ -2,6 +2,8 @@ package com.github.daysonee;
 
 public final class Complex {
 
+    public static final double EPS = 1e-9;
+
     public static final Complex ZERO = new Complex(0, 0);
     public static final Complex ONE = new Complex(1, 0);
     public static final Complex I = new Complex(0, 1);
@@ -36,8 +38,40 @@ public final class Complex {
 
     public Complex multiply(Complex x) {
         double real = this.re * x.re - this.im * x.im;
-        double im = this.re * x.im + this.im * x.re;
+        double image = this.re * x.im + this.im * x.re;
 
-        return new Complex(real, im);
+        return new Complex(real, image);
     }
+
+    public boolean isZero(){
+        if(Math.abs(this.re)<EPS && Math.abs(this.im)<EPS){
+            return true;
+        }
+        return false;
+    }
+
+    public Complex divide(Complex x) {
+        double denominator = x.re*x.re + x.im*x.im;
+        if(x.isZero()){
+            throw new ArithmeticException("Деление на нулевое комплексное");
+        }
+        double real = (this.re*x.re + this.im*x.im) / denominator;
+        double image = (this.im*x.re - this.re*x.im) / denominator;
+
+        return new Complex(real, image);
+    }
+
+    public Complex conjugate(){
+        return new Complex(re, -im);
+    }
+
+    public Complex negate(){
+        return new Complex(-re, -im);
+    }
+    
+    public double abs(){
+        return (Math.sqrt(re*re + im*im));
+    }
+
+
 }
