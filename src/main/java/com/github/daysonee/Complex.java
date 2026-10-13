@@ -98,6 +98,31 @@ public final class Complex {
 
     }
 
+    private static double parseCoefficient(String s) {
+        if (s.equals("+") || s.isEmpty()) {
+            return 1;
+        }
+        if (s.equals("-")) {
+            return -1;
+        }
+        return Double.parseDouble(s);
+    }
 
+    public static Complex parse(String s) {
+        if (s == null || s.isEmpty()) {
+            throw new IllegalArgumentException("Строка пустая");
+        }
+        if (s.charAt(s.length() - 1) != 'i') {
+            return new Complex(Double.parseDouble(s), 0);
+        }
+        s = s.substring(0, s.length() - 1);
+        int plusIndex = s.lastIndexOf("+");
+        int minusIndex = s.lastIndexOf("-");
+        int signIndex = Math.max(plusIndex, minusIndex);
+        if (signIndex == 0 || signIndex == -1) {
+            return new Complex(0, parseCoefficient(s));
+        }
+        return new Complex(Double.parseDouble(s.substring(0, signIndex)), parseCoefficient(s.substring(signIndex)));
+    }
 
 }

@@ -150,4 +150,42 @@ public class ComplexTest {
         assertEquals("0", new Complex(-0.0, 0).toString());
     }
 
+        @Test
+    void checkParse() {
+        Complex a = Complex.parse("3+4i");
+        assertEquals(3, a.getRe(), EPS);
+        assertEquals(4, a.getIm(), EPS);
+
+        Complex b = Complex.parse("3-4i");
+        assertEquals(3, b.getRe(), EPS);
+        assertEquals(-4, b.getIm(), EPS);
+
+        Complex c = Complex.parse("-5");
+        assertEquals(-5, c.getRe(), EPS);
+        assertEquals(0, c.getIm(), EPS);
+
+        Complex d = Complex.parse("1.5-2.5i");
+        assertEquals(1.5, d.getRe(), EPS);
+        assertEquals(-2.5, d.getIm(), EPS);
+    }
+
+    @Test
+    void checkParseSpecialCases() {
+        Complex a = Complex.parse("i");
+        assertEquals(0, a.getRe(), EPS);
+        assertEquals(1, a.getIm(), EPS);
+
+        Complex b = Complex.parse("-i");
+        assertEquals(0, b.getRe(), EPS);
+        assertEquals(-1, b.getIm(), EPS);
+
+        Complex c = Complex.parse("3-i");
+        assertEquals(3, c.getRe(), EPS);
+        assertEquals(-1, c.getIm(), EPS);
+
+        Complex d = Complex.parse("-2i");
+        assertEquals(0, d.getRe(), EPS);
+        assertEquals(-2, d.getIm(), EPS);
+    }
+
 }
