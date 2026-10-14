@@ -1,6 +1,7 @@
 package com.github.daysonee;
 
 public final class ComplexMatrix {
+    public static final double EPS = 1e-9;
 
     private final int rows;
     private final int cols;
@@ -103,17 +104,70 @@ public final class ComplexMatrix {
         if (a.rows != this.cols) {
             throw new IllegalArgumentException("Неправильная размерность матрицы");
         }
-        Complex[][] res = new Complex[rows][cols];
+        Complex[][] res = new Complex[this.rows][a.cols];
         for (int i = 0; i < this.rows; ++i) {
             for (int j = 0; j < a.cols; ++j) {
-                res[i][j] = Complex.ZERO;
+                Complex sum = Complex.ZERO;
                 for (int k = 0; k < this.cols; k++) {
-                    res[i][j].add(data[i][k].multiply(a.get(k, j)));
+                    sum = sum.add(data[i][k].multiply(a.get(k, j)));
                 }
+                res[i][j] = sum;
             }
         }
         return new ComplexMatrix(res);
     }
 
-    
+    public ComplexMatrix transpose(){
+        Complex[][] res = new Complex[cols][rows];
+        for ( int i = 0; i < cols; ++i){
+            for (int j = 0; j < rows; ++j){
+                res[i][j] = data[j][i];
+            }
+        }
+        return new ComplexMatrix(res);
+    }
+
+    private Complex[][] recreate(){
+        Complex[][] res = new Complex[rows][cols];
+        for(int i = 0; i < rows; ++i){
+            for (int j = 0; j < cols; ++j){
+                res[i][j] = new Complex(data[i][j].getRe(), data[i][j].getIm());
+            }
+        }
+        return res;
+    }
+
+    public Complex determinant(){
+        if(this.cols != this.rows){
+            throw new IllegalArgumentException("Матрица не квадратная");
+        }
+        Complex[][] matrixCopy = this.recreate();
+        Complex det = Complex.ONE;
+        for(int k = 0; k < cols; ++k){
+            double maxEl = 0;
+            int mainRow = k;
+            for (int j = k; j < cols; ++j){
+                if (maxEl < matrixCopy[j][k].abs()){
+                    maxEl = matrixCopy[j][k].abs();
+                    mainRow = j;
+                }
+            }
+            if (Math.abs(maxEl) < EPS){return Complex.ZERO;}
+            if (mainRow != k){
+                Complex[] temp = matrixCopy[mainRow];
+                matrixCopy[mainRow] = matrixCopy[k];
+                matrixCopy[k] = temp;
+                det = det.negate();
+            }
+            for (int r = k+1; r < cols; ++r){
+                Complex coef = matrixCopy[r][k].divide(matrixCopy[k][k]);
+                for (int a = k; a < cols; ++a){
+                    matrixCopy[r][a] = matrixCopy[r][a].subtract(matrixCopy[k][a].multiply(coef));
+                }
+            }
+            det = det.multiply(matrixCopy[k][k]);
+        }
+        return det;
+    }
+
 }
