@@ -117,51 +117,53 @@ public final class ComplexMatrix {
         return new ComplexMatrix(res);
     }
 
-    public ComplexMatrix transpose(){
+    public ComplexMatrix transpose() {
         Complex[][] res = new Complex[cols][rows];
-        for ( int i = 0; i < cols; ++i){
-            for (int j = 0; j < rows; ++j){
+        for (int i = 0; i < cols; ++i) {
+            for (int j = 0; j < rows; ++j) {
                 res[i][j] = data[j][i];
             }
         }
         return new ComplexMatrix(res);
     }
 
-    private Complex[][] recreate(){
+    private Complex[][] recreate() {
         Complex[][] res = new Complex[rows][cols];
-        for(int i = 0; i < rows; ++i){
-            for (int j = 0; j < cols; ++j){
+        for (int i = 0; i < rows; ++i) {
+            for (int j = 0; j < cols; ++j) {
                 res[i][j] = new Complex(data[i][j].getRe(), data[i][j].getIm());
             }
         }
         return res;
     }
 
-    public Complex determinant(){
-        if(this.cols != this.rows){
+    public Complex determinant() {
+        if (this.cols != this.rows) {
             throw new IllegalArgumentException("Матрица не квадратная");
         }
         Complex[][] matrixCopy = this.recreate();
         Complex det = Complex.ONE;
-        for(int k = 0; k < cols; ++k){
+        for (int k = 0; k < cols; ++k) {
             double maxEl = 0;
             int mainRow = k;
-            for (int j = k; j < cols; ++j){
-                if (maxEl < matrixCopy[j][k].abs()){
+            for (int j = k; j < cols; ++j) {
+                if (maxEl < matrixCopy[j][k].abs()) {
                     maxEl = matrixCopy[j][k].abs();
                     mainRow = j;
                 }
             }
-            if (Math.abs(maxEl) < EPS){return Complex.ZERO;}
-            if (mainRow != k){
+            if (Math.abs(maxEl) < EPS) {
+                return Complex.ZERO;
+            }
+            if (mainRow != k) {
                 Complex[] temp = matrixCopy[mainRow];
                 matrixCopy[mainRow] = matrixCopy[k];
                 matrixCopy[k] = temp;
                 det = det.negate();
             }
-            for (int r = k+1; r < cols; ++r){
+            for (int r = k + 1; r < cols; ++r) {
                 Complex coef = matrixCopy[r][k].divide(matrixCopy[k][k]);
-                for (int a = k; a < cols; ++a){
+                for (int a = k; a < cols; ++a) {
                     matrixCopy[r][a] = matrixCopy[r][a].subtract(matrixCopy[k][a].multiply(coef));
                 }
             }
@@ -170,4 +172,68 @@ public final class ComplexMatrix {
         return det;
     }
 
+    public static final ComplexMatrix I(int n) {
+        if (n <= 0) {
+            throw new IllegalArgumentException("Размерность меньше 1");
+        }
+        Complex[][] res = new Complex[n][n];
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) {
+                res[i][j] = i == j ? Complex.ONE : Complex.ZERO;
+            }
+        }
+        return new ComplexMatrix(res);
+    }
+
+    public ComplexMatrix inverse() {
+        if (rows != cols) {
+            throw new IllegalArgumentException("Не квадратная матрица");
+        }
+        Complex[][] matrixCopy = this.recreate();
+        Complex[][] res = ComplexMatrix.I(rows).recreate();
+
+        for (int k = 0; k < rows; ++k) {
+            int mainRow = k;
+            double maxEl = matrixCopy[k][k].abs();
+            for (int j = k + 1; j < rows; ++j) {
+                if (matrixCopy[j][k].abs() > maxEl) {
+                    maxEl = matrixCopy[j][k].abs();
+                    mainRow = j;
+                }
+            }
+            if (maxEl < EPS) {
+                throw new ArithmeticException("Матрица вырождена");
+            }
+            if (mainRow != k) {
+                Complex[] temp = matrixCopy[mainRow];
+                matrixCopy[mainRow] = matrixCopy[k];
+                matrixCopy[k] = temp;
+
+                temp = res[mainRow];
+                res[mainRow] = res[k];
+                res[k] = temp;
+            }
+            Complex p = new Complex(matrixCopy[k][k].getRe(), matrixCopy[k][k].getIm());
+            for (int c = 0; c < rows; ++c) {
+                matrixCopy[k][c] = matrixCopy[k][c].divide(p);
+                res[k][c] = res[k][c].divide(p);
+            }
+
+            for (int r = 0; r < rows; ++r) {
+                if (r != k) {
+                    Complex coef = new Complex(matrixCopy[r][k].getRe(), matrixCopy[r][k].getIm());
+                    for (int c = 0; c < rows; ++c) {
+                        matrixCopy[r][c] = matrixCopy[r][c].subtract(coef.multiply(matrixCopy[k][c]));
+                        res[r][c] = res[r][c].subtract(coef.multiply(res[k][c]));
+                    }
+                }
+            }
+
+        }
+        return new ComplexMatrix(res);
+    }
+
+    public ComplexMatrix divide(ComplexMatrix a) {
+        return this.multiply(a.inverse());
+    }
 }
